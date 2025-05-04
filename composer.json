@@ -1,0 +1,26 @@
+{
+    "name": "belek/pop-it-mvc",
+    "description": "practphp",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mongushb1ksh",
+            "email": "bitelgra@icloud.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.4|^8.0",
+        "illuminate/database": "12.x-dev",
+        "illuminate/events": "12.x-dev",
+        "nikic/fast-route": "^2.0@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Src\\": "core/Src/",
+            "": "app/"
+        }
+    }
+ 
+}
