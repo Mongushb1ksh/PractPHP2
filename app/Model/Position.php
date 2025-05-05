@@ -9,7 +9,7 @@ use Src\Auth\IdentityInterface;
 class Position extends Model
 {
    use HasFactory;
-
+   protected $primaryKey = 'position_id';
    public $timestamps = false;
    protected $fillable = [
     'position_name'

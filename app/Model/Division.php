@@ -9,7 +9,7 @@ use Src\Auth\IdentityInterface;
 class Division extends Model 
 {
    use HasFactory;
-
+   protected $primaryKey = 'division_id';
    public $timestamps = false;
    protected $fillable = [
     'division_name',

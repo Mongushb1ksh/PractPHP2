@@ -119,23 +119,25 @@ class Site
             'errors' => $validation['errors'] ?? []
         ]);
     }
-
     public function show(Request $request): string
-{
-    // Получаем ID из URL
-    $divisionId = $request->id;
-    
-    // Находим подразделение с сотрудниками
-    $division = Division::with('employees')->find($divisionId);
-    
-    if (!$division) {
-        return new View('errors.404', [], 404);
+    {
+        // Разбираем URI чтобы извлечь ID
+        $id = $request->get('id');
+        
+        $division = Division::with([
+            'type',
+            'employees' => function($query) {
+                $query->with(['position', 'staffCategory']);
+            }
+        ])->find($id);
+        
+        if (!$division) {
+            return new View('errors.404', [], 404);
+        }
+        return (new View())->render('divisions.show', [
+            'division' => $division,
+            'employees' => $division->employees
+        ]);
     }
-    
-    return new View('divisions.show', [
-        'division' => $division,
-        'employees' => $division->employees
-    ]);
-}
 }
 
