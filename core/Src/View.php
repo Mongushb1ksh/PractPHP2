@@ -58,6 +58,7 @@ class View
 
            //Возвращаем собранную страницу
            return require($this->getPathToMain());
+           return (string) ob_get_clean();
        }
        throw new Exception('Error render');
    }

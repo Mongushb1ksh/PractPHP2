@@ -1,0 +1,23 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70px;
+}
+header>nav{
+    display: flex;
+    gap: 10%;
+    justify-content: end;
+    align-items: center;
+
+}
+
+
+header>nav>a{
+    text-decoration: none;
+
+}
