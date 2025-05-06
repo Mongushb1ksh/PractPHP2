@@ -27,7 +27,7 @@ class Site
        }
        //Если удалось аутентифицировать пользователя, то редирект
        if (Auth::attempt($request->all())) {
-           app()->route->redirect('/hello');
+           app()->route->redirect('/profile');
        }
        //Если аутентификация не удалась, то сообщение об ошибке
        return new View('site.login', ['message' => 'Неправильные логин или пароль']);
@@ -42,7 +42,7 @@ class Site
     public function logout(): void
     {
         Auth::logout();
-        app()->route->redirect('/login');
+        app()->route->redirect('/');
     }
 
  
@@ -54,7 +54,7 @@ class Site
     public function signup(Request $request): string
     {
         if ($request->method === 'POST' && User::create($request->all())) {
-            app()->route->redirect('/hello');
+            app()->route->redirect('/');
         }
         return new View('site.signup');
     }
@@ -79,11 +79,9 @@ class Site
     public function profile(Request $request): string
     {
         $user = Auth::user();
-        $employee = Employee::where('user_id', $user->id)->first();
         
         return new View('site.profile', [
             'user' => $user,
-            'employee' => $employee
         ]);
     }
 
@@ -130,6 +128,7 @@ class Site
                 $query->with(['position', 'staffCategory']);
             }
         ])->find($id);
+
         
         if (!$division) {
             return new View('errors.404', [], 404);
@@ -137,6 +136,83 @@ class Site
         return (new View())->render('divisions.show', [
             'division' => $division,
             'employees' => $division->employees
+        ]);
+    }
+
+    public function createHr(Request $request): string
+    {
+        if ($request->method === 'POST' && User::create($request->all())) {
+            app()->route->redirect('/dashboard');
+        }
+
+        return new View('admin.create_hr');
+    }
+
+    public function createDivision(Request $request): string
+    {
+        $division_types = DivisionType::all();
+
+        if ($request->method === 'POST') {
+            Division::create([
+                'division_name' => $request->division_name,
+                'division_type_id' => $request->division_type_id
+            ]);
+            app()->route->redirect('/dashboard');
+        }
+
+        return new View('divisions.create', [
+            'division_types' => $division_types
+        ]);    
+    }
+
+
+    public function employeesByCategory(Request $request): string
+    {
+        // Получаем все категории персонала
+        $categories = StaffCategory::all();
+    
+        // Если передан ID категории, фильтруем сотрудников
+        $categoryId = isset($request->all()['category_id']) ? $request->get('category_id') : null;
+        if ($categoryId) {
+            $employees = Employee::where('staff_category_id', $categoryId)
+                ->with(['position', 'division'])
+                ->get();
+        } else {
+            $employees = [];
+        }
+    
+        return new View('employee.by_category', [
+            'categories' => $categories,
+            'employees' => $employees ?? [],
+            'selected_category_id' => $categoryId
+        ]);
+    }
+
+    public function changeDivision(Request $request): string
+    {
+
+        $id = $request->get('id');
+
+        $id = $request->get('id');
+        
+        $employee = Employee::with(['division',])->find($id);
+
+
+        $divisions = Division::all();
+
+        if ($request->method === 'POST') {
+
+            $oldDivisionId = $employee->division_id;
+            $newDivisionId = $request->division_id;
+
+            $employee->update(['division_id' => $newDivisionId]);
+
+            app()->route->redirect('/dashboard');
+        }
+
+        return new View('employee.change_division', [
+            'employee' => $employee,
+            'divisions' => $divisions
         ]);
     }
 }

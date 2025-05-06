@@ -1,8 +1,10 @@
 <h2>Дашборд отдела кадров</h2>
 <div>
     <h4>Сотрудники по подразделениям</h4>
+    <h4><a href="<?= app()->route->getUrl('/employee/by_category') ?>">Сотрудники по составу</a></h4>
 
     <a href="<?= app()->route->getUrl('/employees/create') ?>">Добавить сотрудника</a>
+    <a href="<?= app()->route->getUrl('/divisions/create') ?>">Добавить подразделение</a>
     <table>
         <thead>
             <tr>

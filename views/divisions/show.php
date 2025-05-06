@@ -38,6 +38,7 @@
                             <th>Вид подразделения</th>
                             <th>Адрес регистрации</th>
                             <th>Дата рождения</th>
+                            <th>Действия</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,6 +54,9 @@
                             <td><?= htmlspecialchars($division->type->division_type_name ?? 'Не указан') ?></td>
                             <td><?= htmlspecialchars($employee->registration_address ?? '') ?></td>
                             <td><?= $employee->birth_date ?></td>
+                            <td>
+                                <a href="/pop-it-mvc/employee/change_division?id=<?= $employee->employee_id ?>">Изменить подразделение</a>
+                            </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>

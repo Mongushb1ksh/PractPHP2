@@ -187,4 +187,6 @@
             </tbody>
         </table>
     </div>
+
+    <a class="btn btn-sm btn-warning" href="<?= app()->route->getUrl('/admin/create_hr') ?>">Добавить нового сотрудника отдела кадров</a>
 </div>

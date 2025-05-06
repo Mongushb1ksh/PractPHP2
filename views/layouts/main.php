@@ -10,26 +10,20 @@
 </head>
 <body>
 <header>
-   <nav>
-       <a href="<?= app()->route->getUrl('/hello') ?>">Главная</a>
-       <?php if(!app()->auth::check() && !app()->auth::user()->role === 'admin'): ?>
-       <a href="<?= app()->route->getUrl('/admin/dashboard') ?>">Административная панель</a>
-       <?php endif; ?>
-       <a href="<?= app()->route->getUrl('/dashboard') ?>">Дашбор отдела кадров</a>
+<nav>
+    <?php if(app()->auth::check() && app()->auth::user()->role === 'admin'): ?>
+        <a href="<?= app()->route->getUrl('/admin/dashboard') ?>">Административная панель</a>
+    <?php endif; ?>
 
-       <?php
-       if (!app()->auth::check()):
-           ?>
-           <a href="<?= app()->route->getUrl('/login') ?>">Вход</a>
-           <a href="<?= app()->route->getUrl('/signup') ?>">Регистрация</a>
-       <?php
-       else:
-           ?>
-           <a href="<?= app()->route->getUrl('/logout') ?>">Выход (<?= app()->auth::user()->name ?>)</a>
-       <?php
-       endif;
-       ?>
-   </nav>
+    <?php if (!app()->auth::check()): ?>
+        <a href="<?= app()->route->getUrl('/') ?>">Вход</a>
+        <a href="<?= app()->route->getUrl('/signup') ?>">Регистрация</a>
+    <?php else: ?>
+        <a href="<?= app()->route->getUrl('/dashboard') ?>">Дашборд отдела кадров</a>
+        <a href="<?= app()->route->getUrl('/profile') ?>">Профиль</a>
+        <a href="<?= app()->route->getUrl('/logout') ?>">Выход (<?= htmlspecialchars(app()->auth::user()->name) ?>)</a>
+    <?php endif; ?>
+</nav>
 </header>
 <main>
    <?= $content ?? '' ?>
