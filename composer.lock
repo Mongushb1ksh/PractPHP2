@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d17e924a7df9b5ca8c1a54438882f995",
+    "content-hash": "35025d1207999391ae1d79a706edf682",
     "packages": [
         {
             "name": "brick/math",
@@ -838,6 +838,94 @@
                 "source": "https://github.com/laravel/serializable-closure"
             },
             "time": "2025-03-28T16:31:40+00:00"
+        },
+        {
+            "name": "mongushb1ksh/collect",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Mongushb1ksh/collect-pract-php.git",
+                "reference": "a71cc6123b9ef2152774cdc5420e9f0cde756f3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Mongushb1ksh/collect-pract-php/zipball/a71cc6123b9ef2152774cdc5420e9f0cde756f3f",
+                "reference": "a71cc6123b9ef2152774cdc5420e9f0cde756f3f",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 | ^8.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Collect\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Belek",
+                    "email": "bitelgra@icloud.com"
+                }
+            ],
+            "description": "Module for working with arrays ",
+            "support": {
+                "issues": "https://github.com/Mongushb1ksh/collect-pract-php/issues",
+                "source": "https://github.com/Mongushb1ksh/collect-pract-php/tree/main"
+            },
+            "time": "2025-05-07T04:17:20+00:00"
+        },
+        {
+            "name": "mongushb1ksh/validator",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Mongushb1ksh/validator.git",
+                "reference": "2446a69eea459c334aa726ae882c79327afb232a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Mongushb1ksh/validator/zipball/2446a69eea459c334aa726ae882c79327afb232a",
+                "reference": "2446a69eea459c334aa726ae882c79327afb232a",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 | ^8.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Rules.php"
+                ],
+                "psr-4": {
+                    "Collect\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Belek",
+                    "email": "bitelgra@icloud.com"
+                }
+            ],
+            "description": "Module for working with arrays ",
+            "support": {
+                "issues": "https://github.com/Mongushb1ksh/validator/issues",
+                "source": "https://github.com/Mongushb1ksh/validator/tree/main"
+            },
+            "time": "2025-05-07T05:08:23+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -1721,6 +1809,8 @@
     "stability-flags": {
         "illuminate/database": 20,
         "illuminate/events": 20,
+        "mongushb1ksh/collect": 20,
+        "mongushb1ksh/validator": 20,
         "nikic/fast-route": 20
     },
     "prefer-stable": false,
