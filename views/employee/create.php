@@ -1,28 +1,30 @@
 <h2>Добавление сотрудника</h2>
+<h3><?= $message ?? ''; ?></h3>
 <form method="POST" class="form-container">
+<input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
     <div class="form-group">
         <label for="last_name">Фамилия</label>
-        <input type="text" id="last_name" name="last_name" placeholder="Введите фамилию сотрудника" required>
+        <input type="text" id="last_name" name="last_name" placeholder="Введите фамилию сотрудника" >
     </div>
     <div class="form-group">
         <label for="first_name">Имя</label>
-        <input type="text" id="first_name" name="first_name" placeholder="Введите имя сотрудника" required>
+        <input type="text" id="first_name" name="first_name" placeholder="Введите имя сотрудника" >
     </div>
     <div class="form-group">
         <label for="middle_name">Отчество</label>
-        <input type="text" id="middle_name" name="middle_name" placeholder="Введите отчество сотрудника" required>
+        <input type="text" id="middle_name" name="middle_name" placeholder="Введите отчество сотрудника" >
     </div>
     <div class="form-group">
         <label for="birth_date">Дата рождения</label>
-        <input type="date" id="birth_date" name="birth_date" required>
+        <input type="date" id="birth_date" name="birth_date" >
     </div>
     <div class="form-group">
         <label for="registration_address">Адрес регистрации</label>
-        <input type="text" id="registration_address" name="registration_address" placeholder="Введите адрес регистрации сотрудника" required>
+        <input type="text" id="registration_address" name="registration_address" placeholder="Введите адрес регистрации сотрудника" >
     </div>
     <div class="form-group">
         <label for="division_id">Подразделение</label>
-        <select id="division_id" name="division_id" <?= isset($errors['division_id']) ? 'is-invalid' : '' ?>" required>
+        <select id="division_id" name="division_id" <?= isset($errors['division_id']) ? 'is-invalid' : '' ?>" >
             <option value="">Выберите подразделение</option>
             <?php foreach ($divisions as $division): ?>
                 <option value="<?= $division->division_id ?>"
@@ -34,7 +36,7 @@
     </div>
     <div class="form-group">
         <label for="position_id">Должность</label>
-        <select id="position_id" name="position_id" <?= isset($errors['position_id']) ? 'is-invalid' : '' ?>" required>
+        <select id="position_id" name="position_id" <?= isset($errors['position_id']) ? 'is-invalid' : '' ?>" >
             <option value="">Выберите должность</option>
             <?php foreach ($positions as $position): ?>
                 <option value="<?= $position->position_id ?>"
@@ -46,7 +48,7 @@
     </div>
     <div class="form-group">
         <label for="staff_category_id">Категория персонала</label>
-        <select id="staff_category_id" name="staff_category_id" <?= isset($errors['staff_category_id']) ? 'is-invalid' : '' ?>" required>
+        <select id="staff_category_id" name="staff_category_id" <?= isset($errors['staff_category_id']) ? 'is-invalid' : '' ?>" >
             <option value="">Выберите категорию</option>
             <?php foreach ($categories as $category): ?>
                 <option value="<?= $category->staff_category_id ?>"

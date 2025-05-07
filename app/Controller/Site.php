@@ -70,27 +70,60 @@ class Site
         $user = Auth::user();
         return new View('site.profile', ['user' => $user,]);
     }
-    public function create(Request $request): string{
+    public function create(Request $request): string
+    {
         $divisions = Division::all();
         $positions = Position::all();
         $categories = StaffCategory::all();
+
         if ($request->method === 'POST') {
-            $validation = ([
+            $validator = new Validator($request->all(), [
                 'last_name' => ['required'],
                 'first_name' => ['required'],
-                'birth_date' => ['required', 'date'],
-                'division_id' => ['required', 'numeric'],
-                'position_id' => ['required', 'numeric'],
-                'staff_category_id' => ['required', 'numeric']
+                'birth_date' => ['required'],
+                'registration_address' => ['required'],
+                'division_id' => ['required'],
+                'position_id' => ['required'],
+                'staff_category_id' => ['required']
+            ], [
+                'required' => 'Поле :field обязательно для заполнения.',
+                'date' => 'Поле :field должно быть датой.',
+                'numeric' => 'Поле :field должно быть числом.'
             ]);
-            if ($validation && Employee::create($request->all())) {app()->route->redirect('/dashboard');}
+            if ($validator->fails()) {               
+                return new View('employee.create', [
+                    'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)
+                ]);
+            }
+            $data = $request->all();
+            $errors = [];
+            if (!empty($errors)) {
+                return new View('employee.create', [
+                    'divisions' => $divisions,
+                    'positions' => $positions,
+                    'categories' => $categories,
+                    'errors' => $errors
+                ]);
+            }
+            Employee::create([
+                'last_name' => $data['last_name'],
+                'first_name' => $data['first_name'],
+                'middle_name' => $data['middle_name'] ?? null,
+                'birth_date' => $data['birth_date'],
+                'registration_address' => $data['registration_address'],
+                'division_id' => $data['division_id'],
+                'position_id' => $data['position_id'],
+                'staff_category_id' => $data['staff_category_id']
+            ]);
+            Division::where('division_id', $data['division_id'])->increment('employee_count');
+            app()->route->redirect('/dashboard');
         }
 
         return new View('employee.create', [
             'divisions' => $divisions,
             'positions' => $positions,
             'categories' => $categories,
-            'errors' => $validation['errors'] ?? []
+            'errors' => []
         ]);
     }
     public function show(Request $request): string{
@@ -108,17 +141,40 @@ class Site
         ]);
     }
     public function createHr(Request $request): string{
-        if ($request->method === 'POST' && User::create($request->all())) {app()->route->redirect('/dashboard');}
+        if ($request->method === 'POST') {
+            $validator = new Validator($request->all(), [
+                'name' => ['required'],
+                'lastName' => ['required'],
+                'login' => ['required', 'unique:users,login'],
+                'password' => ['required']
+            ], [
+                'required' => 'Поле :field пусто',
+                'unique' => 'Поле :field должно быть уникально'
+            ]);
+            if($validator->fails()){
+                return new View('admin.create_hr', ['message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)]);
+            }
+            if (User::create($request->all())) {app()->route->redirect('/dashboard');}
+        }
         return new View('admin.create_hr');
     }
     public function createDivision(Request $request): string{
         $division_types = DivisionType::all();
         if ($request->method === 'POST') {
-            Division::create([
-                'division_name' => $request->division_name,
-                'division_type_id' => $request->division_type_id
+            $validator = new Validator($request->all(), [
+                'division_name' =>  ['required'],
+                'division_type_id' =>  ['required']
+            ], [
+                'required' => 'Поле :field пусто',
+                'unique' => 'Поле :field должно быть уникально'
             ]);
-            app()->route->redirect('/dashboard');
+            if($validator->fails()){
+                return new View('divisions.create', ['division_types' => $division_types, 'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)]);
+            }
+            if (Division::create(['division_name' => $request->division_name, 'division_type_id' => $request->division_type_id])) 
+            {
+                app()->route->redirect('/dashboard');
+            }
         }
         return new View('divisions.create', ['division_types' => $division_types]);    
     }
@@ -137,18 +193,28 @@ class Site
             'selected_category_id' => $categoryId
         ]);
     }
-    public function changeDivision(Request $request): string{
-        $id = $request->get('id');
+    public function changeDivision(Request $request): string {
         $id = $request->get('id');
         $employee = Employee::with(['division',])->find($id);
         $divisions = Division::all();
         if ($request->method === 'POST') {
-            $oldDivisionId = $employee->division_id;
+            $validator = new Validator($request->all(), [
+                'division_id' => ['required'],
+            ], [
+                'required' => 'Поле :field пусто',
+                'unique' => 'Поле :field должно быть уникально'
+            ]);
+            if($validator->fails()){
+                return new View('employee.change_division', ['employee' => $employee,'divisions' => $divisions, 'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)]);
+            }
             $newDivisionId = $request->division_id;
-            $employee->update(['division_id' => $newDivisionId]);
-            app()->route->redirect('/dashboard');
+            if ($$employee->update(['division_id' => $newDivisionId])) {
+                app()->route->redirect('/dashboard');
+            }        
         }
         return new View('employee.change_division', ['employee' => $employee,'divisions' => $divisions]);
+
+
     }
 }
 

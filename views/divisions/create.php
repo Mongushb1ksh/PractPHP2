@@ -1,11 +1,13 @@
 <h2>Добавление нового подразделения</h2>
+<h3><?= $message ?? ''; ?></h3>
 <form method="POST" class="form-container">
+<input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
     <div class="form-group">
-        <input type="text" name="division_name" placeholder="Введите название подразделения" required>
+        <input type="text" name="division_name" placeholder="Введите название подразделения" >
     </div>
     <div class="form-group">
         <label for="division_type_id">Тип подразделения</label>
-        <select id="division_type_id" name="division_type_id" <?= isset($errors['division_type_id']) ? 'is-invalid' : '' ?>" required>
+        <select id="division_type_id" name="division_type_id" <?= isset($errors['division_type_id']) ? 'is-invalid' : '' ?>" >
             <option value="">Выберите тип подразделение</option>
             <?php foreach ($division_types as $division_type): ?>
                 <option value="<?= $division_type->division_type_id ?>"
@@ -17,7 +19,7 @@
     </div>
     <div class="form-actions">
         <button type="submit" class="btn btn-primary">Создать подразделение</button>
-        <a href="/dashboard" class="btn btn-link">Отмена</a>
+        <a href="<?= app()->route->getUrl('/dashboard') ?>" class="btn btn-link">Отмена</a>
     </div>
 </form>
 
