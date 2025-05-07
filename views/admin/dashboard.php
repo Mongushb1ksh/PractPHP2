@@ -162,7 +162,6 @@
                    <th>Логин</th>
                    <th>Роль</th>
                    <th>Дата создания</th>
-                   <th>Действия</th>
                </tr>
             </thead>
             <tbody>
@@ -176,12 +175,6 @@
                         </span>
                     </td>
                     <td><?= date('d.m.Y', strtotime($user->created_at)) ?></td>
-                    <td>
-                        <div class="btn-group">
-                            <a href="/users/<?= $user->id ?>/edit" class="btn btn-sm btn-warning">Изменить</a>
-                            <a href="/users/<?= $user->id ?>/delete" class="btn btn-sm btn-danger">Удалить</a>
-                        </div>
-                    </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
