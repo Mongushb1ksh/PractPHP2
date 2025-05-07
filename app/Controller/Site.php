@@ -202,13 +202,12 @@ class Site
                 'division_id' => ['required'],
             ], [
                 'required' => 'Поле :field пусто',
-                'unique' => 'Поле :field должно быть уникально'
             ]);
             if($validator->fails()){
                 return new View('employee.change_division', ['employee' => $employee,'divisions' => $divisions, 'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)]);
             }
             $newDivisionId = $request->division_id;
-            if ($$employee->update(['division_id' => $newDivisionId])) {
+            if ($employee->update(['division_id' => $newDivisionId])) {
                 app()->route->redirect('/dashboard');
             }        
         }
