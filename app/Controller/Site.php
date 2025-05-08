@@ -11,6 +11,8 @@ use Src\View;
 use Src\Request;
 use Src\Auth\Auth;
 use Src\Validator\Validator;
+use function HRValidator\validate;
+
 class Site
 {
     public function login(Request $request): string{
@@ -33,7 +35,7 @@ class Site
  
     public function signup(Request $request): string{
         if ($request->method === 'POST') {
-            $validator = new Validator($request->all(), [
+            $validator = validate($request->all(), [
                 'name' => ['required'],
                 'lastName' => ['required'],
                 'login' => ['required', 'unique:users,login'],
@@ -42,8 +44,18 @@ class Site
                 'required' => 'Поле :field пусто',
                 'unique' => 'Поле :field должно быть уникально'
             ]);
-            if($validator->fails()){
-                return new View('site.signup', ['message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)]);
+            if (!$validator->validate()) {
+                // Собираем все ошибки в одну строку
+                $errorMessages = [];
+                foreach ($validator->errors() as $field => $errors) {
+                    $errorMessages[] = implode(', ', $errors);
+                }
+                $message = implode('; ', $errorMessages);
+    
+                return new View('site.signup', [
+                    'message' => $message,
+                    'old' => $request->all()
+                ]);
             }
             if (User::create($request->all())) {app()->route->redirect('/');}
         }
@@ -77,7 +89,7 @@ class Site
         $categories = StaffCategory::all();
 
         if ($request->method === 'POST') {
-            $validator = new Validator($request->all(), [
+            $validator = validate($request->all(), [
                 'last_name' => ['required'],
                 'first_name' => ['required'],
                 'birth_date' => ['required'],
@@ -88,11 +100,21 @@ class Site
             ], [
                 'required' => 'Поле :field обязательно для заполнения.',
                 'date' => 'Поле :field должно быть датой.',
-                'numeric' => 'Поле :field должно быть числом.'
             ]);
-            if ($validator->fails()) {               
+            if (!$validator->validate()) {
+                // Собираем все ошибки в одну строку
+                $errorMessages = [];
+                foreach ($validator->errors() as $field => $errors) {
+                    $errorMessages[] = implode(', ', $errors);
+                }
+                $message = implode('; ', $errorMessages);
+    
                 return new View('employee.create', [
-                    'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)
+                    'divisions' => $divisions,
+                    'positions' => $positions,
+                    'categories' => $categories,
+                    'message' => $message,
+                    'old' => $request->all()
                 ]);
             }
             $data = $request->all();
@@ -142,7 +164,7 @@ class Site
     }
     public function createHr(Request $request): string{
         if ($request->method === 'POST') {
-            $validator = new Validator($request->all(), [
+            $validator = validate($request->all(), [
                 'name' => ['required'],
                 'lastName' => ['required'],
                 'login' => ['required', 'unique:users,login'],
@@ -151,8 +173,18 @@ class Site
                 'required' => 'Поле :field пусто',
                 'unique' => 'Поле :field должно быть уникально'
             ]);
-            if($validator->fails()){
-                return new View('admin.create_hr', ['message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)]);
+            if (!$validator->validate()) {
+                // Собираем все ошибки в одну строку
+                $errorMessages = [];
+                foreach ($validator->errors() as $field => $errors) {
+                    $errorMessages[] = implode(', ', $errors);
+                }
+                $message = implode('; ', $errorMessages);
+    
+                return new View('admin.create_hr', [
+                    'message' => $message,
+                    'old' => $request->all()
+                ]);
             }
             if (User::create($request->all())) {app()->route->redirect('/dashboard');}
         }
@@ -161,15 +193,26 @@ class Site
     public function createDivision(Request $request): string{
         $division_types = DivisionType::all();
         if ($request->method === 'POST') {
-            $validator = new Validator($request->all(), [
+            $validator = validate($request->all(), [
                 'division_name' =>  ['required'],
                 'division_type_id' =>  ['required']
             ], [
                 'required' => 'Поле :field пусто',
                 'unique' => 'Поле :field должно быть уникально'
             ]);
-            if($validator->fails()){
-                return new View('divisions.create', ['division_types' => $division_types, 'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)]);
+            if (!$validator->validate()) {
+                // Собираем все ошибки в одну строку
+                $errorMessages = [];
+                foreach ($validator->errors() as $field => $errors) {
+                    $errorMessages[] = implode(', ', $errors);
+                }
+                $message = implode('; ', $errorMessages);
+    
+                return new View('divisions.create', [
+                    'division_types' => $division_types,
+                    'message' => $message,
+                    'old' => $request->all()
+                ]);
             }
             if (Division::create(['division_name' => $request->division_name, 'division_type_id' => $request->division_type_id])) 
             {
@@ -198,13 +241,25 @@ class Site
         $employee = Employee::with(['division',])->find($id);
         $divisions = Division::all();
         if ($request->method === 'POST') {
-            $validator = new Validator($request->all(), [
+            $validator = validate($request->all(), [
                 'division_id' => ['required'],
             ], [
                 'required' => 'Поле :field пусто',
             ]);
-            if($validator->fails()){
-                return new View('employee.change_division', ['employee' => $employee,'divisions' => $divisions, 'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)]);
+            if (!$validator->validate()) {
+                // Собираем все ошибки в одну строку
+                $errorMessages = [];
+                foreach ($validator->errors() as $field => $errors) {
+                    $errorMessages[] = implode(', ', $errors);
+                }
+                $message = implode('; ', $errorMessages);
+    
+                return new View('employee.change_division', [
+                    'employee' => $employee,
+                    'divisions' => $divisions,
+                    'message' => $message,
+                    'old' => $request->all()
+                ]);
             }
             $newDivisionId = $request->division_id;
             if ($employee->update(['division_id' => $newDivisionId])) {
