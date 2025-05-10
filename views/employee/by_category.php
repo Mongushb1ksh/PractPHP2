@@ -33,7 +33,7 @@
                     <td><?= htmlspecialchars($employee->last_name) ?></td>
                     <td><?= htmlspecialchars($employee->first_name) ?></td>
                     <td><?= htmlspecialchars($employee->birth_date) ?></td>
-                    <td><?= htmlspecialchars($employee->position->name) ?></td>
+                    <td><?= htmlspecialchars($employee->position->position_name) ?></td>
                     <td><?= htmlspecialchars($employee->division->division_name) ?></td>
                 </tr>
             <?php endforeach; ?>
