@@ -11,6 +11,7 @@ use Src\View;
 use Src\Request;
 use Src\Auth\Auth;
 use Src\Validator\Validator;
+use Validators\UserValidator;
 use function HRValidator\validate;
 
 class Site
@@ -35,19 +36,11 @@ class Site
  
     public function signup(Request $request): string{
         if ($request->method === 'POST') {
-            $validator = validate($request->all(), [
-                'name' => ['required'],
-                'lastName' => ['required'],
-                'login' => ['required', 'unique:users,login'],
-                'password' => ['required']
-            ], [
-                'required' => 'Поле :field пусто',
-                'unique' => 'Поле :field должно быть уникально'
-            ]);
-            if (!$validator->validate()) {
-                // Собираем все ошибки в одну строку
+            $result = UserValidator::validateCreate($request);
+            if (!$result['valid']) {
+                // Собираем ошибки в строку
                 $errorMessages = [];
-                foreach ($validator->errors() as $field => $errors) {
+                foreach ($result['errors'] as $field => $errors) {
                     $errorMessages[] = implode(', ', $errors);
                 }
                 $message = implode('; ', $errorMessages);

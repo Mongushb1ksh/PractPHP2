@@ -4,6 +4,7 @@ namespace Controller;
 use Model\{Division, DivisionType, Employee};
 use Src\View;
 use Src\Request;
+use Validators\DivisionValidator;
 use function HRValidator\validate;
 
 class DivisionController
@@ -26,17 +27,10 @@ class DivisionController
     public function createDivision(Request $request): string{
         $division_types = DivisionType::all();
         if ($request->method === 'POST') {
-            $validator = validate($request->all(), [
-                'division_name' =>  ['required'],
-                'division_type_id' =>  ['required']
-            ], [
-                'required' => 'Поле :field пусто',
-                'unique' => 'Поле :field должно быть уникально'
-            ]);
-            if (!$validator->validate()) {
-                // Собираем все ошибки в одну строку
+            $result = DivisionValidator::validateCreate($request);
+            if (!$result['valid']) {
                 $errorMessages = [];
-                foreach ($validator->errors() as $field => $errors) {
+                foreach ($result['errors'] as $field => $errors) {
                     $errorMessages[] = implode(', ', $errors);
                 }
                 $message = implode('; ', $errorMessages);

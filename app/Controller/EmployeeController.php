@@ -4,6 +4,7 @@ namespace Controller;
 use Model\{Employee, Division, Position, StaffCategory};
 use Src\View;
 use Src\Request;
+use Validators\EmployeeValidator;
 use function HRValidator\validate;
 
 class EmployeeController
@@ -15,22 +16,11 @@ class EmployeeController
         $categories = StaffCategory::all();
 
         if ($request->method === 'POST') {
-            $validator = validate($request->all(), [
-                'last_name' => ['required'],
-                'first_name' => ['required'],
-                'birth_date' => ['required'],
-                'registration_address' => ['required'],
-                'division_id' => ['required'],
-                'position_id' => ['required'],
-                'staff_category_id' => ['required']
-            ], [
-                'required' => 'Поле :field обязательно для заполнения.',
-                'date' => 'Поле :field должно быть датой.',
-            ]);
-            if (!$validator->validate()) {
-                // Собираем все ошибки в одну строку
+            $result = EmployeeValidator::validateCreate($request);
+
+            if (!$result['valid']) {
                 $errorMessages = [];
-                foreach ($validator->errors() as $field => $errors) {
+                foreach ($result['errors'] as $field => $errors) {
                     $errorMessages[] = implode(', ', $errors);
                 }
                 $message = implode('; ', $errorMessages);
@@ -44,15 +34,6 @@ class EmployeeController
                 ]);
             }
             $data = $request->all();
-            $errors = [];
-            if (!empty($errors)) {
-                return new View('employee.create', [
-                    'divisions' => $divisions,
-                    'positions' => $positions,
-                    'categories' => $categories,
-                    'errors' => $errors
-                ]);
-            }
             Employee::create([
                 'last_name' => $data['last_name'],
                 'first_name' => $data['first_name'],
@@ -94,15 +75,11 @@ class EmployeeController
         $employee = Employee::with(['division',])->find($id);
         $divisions = Division::all();
         if ($request->method === 'POST') {
-            $validator = validate($request->all(), [
-                'division_id' => ['required'],
-            ], [
-                'required' => 'Поле :field пусто',
-            ]);
-            if (!$validator->validate()) {
-                // Собираем все ошибки в одну строку
+            $result = EmployeeValidator::validateChangeDivision($request);
+
+            if (!$result['valid']) {
                 $errorMessages = [];
-                foreach ($validator->errors() as $field => $errors) {
+                foreach ($result['errors'] as $field => $errors) {
                     $errorMessages[] = implode(', ', $errors);
                 }
                 $message = implode('; ', $errorMessages);

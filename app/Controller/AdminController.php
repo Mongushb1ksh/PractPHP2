@@ -7,6 +7,7 @@ use Model\Employee;
 use Src\View;
 use Src\Auth\Auth;
 use Src\Request;
+use Validators\UserValidator;
 use function HRValidator\validate;
 
 class AdminController
@@ -35,18 +36,11 @@ class AdminController
  
     public function createHr(Request $request): string{
         if ($request->method === 'POST') {
-            $validator = validate($request->all(), [
-                'name' => ['required'],
-                'lastName' => ['required'],
-                'login' => ['required', 'unique:users,login'],
-                'password' => ['required']
-            ], [
-                'required' => 'Поле :field пусто',
-                'unique' => 'Поле :field должно быть уникально'
-            ]);
-            if (!$validator->validate()) {
+            $result = UserValidator::validateCreate($request);
+
+            if (!$result['valid']) {
                 $errorMessages = [];
-                foreach ($validator->errors() as $field => $errors) {
+                foreach ($result['errors'] as $field => $errors) {
                     $errorMessages[] = implode(', ', $errors);
                 }
                 $message = implode('; ', $errorMessages);
@@ -56,7 +50,9 @@ class AdminController
                     'old' => $request->all()
                 ]);
             }
-            if (User::create($request->all())) {app()->route->redirect('/dashboard');}
+            if (User::create($request->all())) {
+                app()->route->redirect('/dashboard');
+            }        
         }
         return new View('admin.create_hr');
     }
