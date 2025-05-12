@@ -12,8 +12,8 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.4|^8.0",
-        "illuminate/database": "12.x-dev",
-        "illuminate/events": "12.x-dev",
+        "illuminate/database": "^9.0|^10.0",
+        "illuminate/events": "^9.0|^10.0",
         "nikic/fast-route": "^2.0@dev",
         "mongushb1ksh/collect": "dev-main",
         "mongushb1ksh/hrvalidator": "dev-main"

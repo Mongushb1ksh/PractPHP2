@@ -5,7 +5,7 @@ use Model\{Employee, Division, Position, StaffCategory};
 use Src\View;
 use Src\Request;
 use Validators\EmployeeValidator;
-use function HRValidator\validate;
+
 
 class EmployeeController
 {
@@ -34,7 +34,7 @@ class EmployeeController
                 ]);
             }
             $data = $request->all();
-            Employee::create([
+            $employee = Employee::create([
                 'last_name' => $data['last_name'],
                 'first_name' => $data['first_name'],
                 'middle_name' => $data['middle_name'] ?? null,
@@ -44,7 +44,9 @@ class EmployeeController
                 'position_id' => $data['position_id'],
                 'staff_category_id' => $data['staff_category_id']
             ]);
-            Division::where('division_id', $data['division_id'])->increment('employee_count');
+
+            $employee->division->updateEmployeeCount();
+            $employee->division->updateAverageAge();
             app()->route->redirect('/dashboard');
         }
 
@@ -90,11 +92,25 @@ class EmployeeController
                     'message' => $message,
                     'old' => $request->all()
                 ]);
+
             }
+            $oldDivisionId = $employee->division_id;
             $newDivisionId = $request->division_id;
+
             if ($employee->update(['division_id' => $newDivisionId])) {
+                $division = Division::find($oldDivisionId);
+                if($division !== null){
+                    $division->updateEmployeeCount();
+                    $division->updateAverageAge();
+
+                }
+                $division = Division::find($newDivisionId);
+                if($division !== null){
+                    $division->updateEmployeeCount();
+                    $division->updateAverageAge();
+                }
                 app()->route->redirect('/dashboard');
-            }        
+            }
         }
         return new View('employee.change_division', ['employee' => $employee,'divisions' => $divisions]);
     }
