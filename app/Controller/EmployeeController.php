@@ -27,6 +27,7 @@ class EmployeeController
                 'required' => 'Поле :field обязательно для заполнения.',
                 'date' => 'Поле :field должно быть датой.',
             ]);
+
             if (!$validator->validate()) {
                 // Собираем все ошибки в одну строку
                 $errorMessages = [];
@@ -53,7 +54,7 @@ class EmployeeController
                     'errors' => $errors
                 ]);
             }
-            Employee::create([
+            $employee = Employee::create([
                 'last_name' => $data['last_name'],
                 'first_name' => $data['first_name'],
                 'middle_name' => $data['middle_name'] ?? null,
@@ -63,7 +64,8 @@ class EmployeeController
                 'position_id' => $data['position_id'],
                 'staff_category_id' => $data['staff_category_id']
             ]);
-            Division::where('division_id', $data['division_id'])->increment('employee_count');
+
+            $employee->division->updateDivisionStats();
             app()->route->redirect('/dashboard');
         }
 
@@ -113,11 +115,26 @@ class EmployeeController
                     'message' => $message,
                     'old' => $request->all()
                 ]);
+
             }
+            $oldDivisionId = $employee->division_id;
             $newDivisionId = $request->division_id;
+
             if ($employee->update(['division_id' => $newDivisionId])) {
+                // Обновляем статистику для старого и нового подразделений
+                $division = Division::find($oldDivisionId);
+                if($division !== null){
+                    $division->updateEmployeeCount();
+                    $division->updateAverageAge();
+
+                }
+                $division = Division::find($newDivisionId);
+                if($division !== null){
+                    $division->updateEmployeeCount();
+                    $division->updateAverageAge();
+                }
                 app()->route->redirect('/dashboard');
-            }        
+            }
         }
         return new View('employee.change_division', ['employee' => $employee,'divisions' => $divisions]);
     }

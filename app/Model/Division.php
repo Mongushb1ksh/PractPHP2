@@ -14,7 +14,8 @@ class Division extends Model
    protected $fillable = [
     'division_name',
     'division_type_id',
-    'employee_count'
+    'employee_count',
+       'average_age',
    ];
 
    public function type()
@@ -31,6 +32,23 @@ class Division extends Model
         $this->update([
             'employee_count' => $this->employees()->count()
         ]);
+    }
+
+    public function updateAverageAge()
+    {
+        $averageAge = $this->employees()
+            ->selectRaw('AVG(TIMESTAMPDIFF(YEAR, birth_date, CURDATE())) as average_age')
+            ->value('average_age');
+
+        $this->update([
+            'average_age' => $averageAge ? round($averageAge, 1) : null
+        ]);
+    }
+
+    public function updateDivisionStats()
+    {
+        $this->updateEmployeeCount();
+        $this->updateAverageAge();
     }
 
 }
