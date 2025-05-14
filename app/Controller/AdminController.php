@@ -2,58 +2,50 @@
 namespace Controller;
 
 use Model\User;
-use Model\Division;
 use Model\Employee;
 use Src\View;
-use Src\Auth\Auth;
 use Src\Request;
-use Validators\UserValidator;
-use function HRValidator\validate;
 
 class AdminController
 {
-    public function dashboard(Request $request): string{
-        $user = Auth::user();
+    public function dashboard(): string
+    {
+        $user = User::getAuthenticatedUser();
+        
         if ($user->role === 'hr') {
-            $employees = Employee::all();
-            $divisions = Division::all();
-            return new View('hr.dashboard', [
-                'employees' => $employees,
-                'divisions' => $divisions
+            $data = Employee::getAllWithDivisions();
+            return new View('hr.dashboard', $data);
+        }
+        
+        if ($user->role === 'admin') {
+            return new View('admin.dashboard', [
+                'users' => User::getAllByRole('hr')
             ]);
         }
-        if ($user->role === 'admin') {
-            $users = User::all();
-            return new View('admin.dashboard', ['users' => $users]);
-        }
+        
         return new View('site.login');
     }
 
-    public function profile(Request $request): string{
-        $user = Auth::user();
-        return new View('site.profile', ['user' => $user,]);
+    public function profile(): string
+    {
+        return new View('site.profile', [
+            'user' => User::getAuthenticatedUser()
+        ]);
     }
  
-    public function createHr(Request $request): string{
+    public function createHr(Request $request): string
+    {
         if ($request->method === 'POST') {
-            $result = UserValidator::validateCreate($request);
-
-            if (!$result['valid']) {
-                $errorMessages = [];
-                foreach ($result['errors'] as $field => $errors) {
-                    $errorMessages[] = implode(', ', $errors);
-                }
-                $message = implode('; ', $errorMessages);
-    
-                return new View('admin.create_hr', [
-                    'message' => $message,
-                    'old' => $request->all()
-                ]);
-            }
-            if (User::create($request->all())) {
+            if (User::createHr($request->all())) {
                 app()->route->redirect('/dashboard');
-            }        
+            }
+            
+            return new View('admin.create_hr', [
+                'message' => 'Ошибка при создании HR',
+                'old' => $request->all()
+            ]);
         }
+        
         return new View('admin.create_hr');
     }
 }

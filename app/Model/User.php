@@ -5,6 +5,9 @@ namespace Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Src\Auth\IdentityInterface;
+use Src\Request;
+use Src\Auth\Auth;
+use Validators\UserValidator;
 
 class User extends Model implements IdentityInterface
 {
@@ -20,6 +23,27 @@ class User extends Model implements IdentityInterface
        'role',
        
    ];
+
+   public static function getAllByRole(string $role)
+    {
+        return self::where('role', $role)->get();
+    }
+
+    public static function createHr(array $data): bool
+    {
+        $result = UserValidator::validateCreate(new Request($data));
+        
+        if (!$result['valid']) {
+            return false;
+        }
+
+        return (bool) self::create($data);
+    }
+
+    public static function getAuthenticatedUser()
+    {
+        return Auth::user();
+    }
 
    protected static function booted()
    {

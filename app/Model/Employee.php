@@ -52,6 +52,14 @@ class Employee  extends Model
         return self::where('staff_category_id', $categoryId)->get()->toArray();
     }
 
+
+    public static function getAllWithDivisions()
+    {
+        return [
+            'employees' => self::all(),
+            'divisions' => Division::all()
+        ];
+    }
 }
 
 

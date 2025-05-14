@@ -158,23 +158,27 @@
         <table>
             <thead>
                <tr>
-                   <th>ID</th>
+                   <th>ID</th> 
                    <th>Логин</th>
+                   <th>Имя</th>
+                   <th>Фамилия</th>
+                  
                    <th>Роль</th>
-                   <th>Дата создания</th>
                </tr>
             </thead>
             <tbody>
                 <?php foreach ($users as $user): ?>
                 <tr>
                     <td><?= $user->id ?></td>
+                    <td><?= htmlspecialchars($user->lastName) ?></td>
                     <td><?= htmlspecialchars($user->login) ?></td>
+                    <td><?= htmlspecialchars($user->name) ?></td>
+                    
                     <td>
                         <span class="badge bg-<?= $user->role === 'admin' ? 'danger' : 'primary' ?>">
                             <?= $user->role ?>
                         </span>
                     </td>
-                    <td><?= date('d.m.Y', strtotime($user->created_at)) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
