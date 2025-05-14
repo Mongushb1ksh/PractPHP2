@@ -4,7 +4,9 @@ namespace Model;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Src\Auth\IdentityInterface;
+use Validators\DivisionValidator;
+use Src\Request;
+
 
 class Division extends Model 
 {
@@ -17,6 +19,27 @@ class Division extends Model
     'employee_count',
     'average_age',
    ];
+
+   public static function createDivision(array $data): bool
+    {
+        $validator = DivisionValidator::validateCreate(new Request($data));
+        
+        if (!$validator['valid']) {
+            throw new \InvalidArgumentException($validator['errors']);
+        }
+        
+        return (bool) self::create($data);
+    }
+    
+    public static function getWithDetails(int $id): ?self
+    {
+        return self::with([
+            'type',
+            'employees' => function($query) {
+                $query->with(['position', 'staffCategory']);
+            }
+        ])->find($id);
+    }
 
    public function type()
     {

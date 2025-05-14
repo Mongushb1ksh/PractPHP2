@@ -4,6 +4,8 @@ namespace Model;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Validators\EmployeeValidator;
+use Src\Request;
 
 class Employee  extends Model
 {
@@ -15,6 +17,47 @@ class Employee  extends Model
             'birth_date', 'registration_address',
             'division_id', 'staff_category_id', 'position_id'
     ];
+    public static function createEmployee(array $data): self
+    {
+        $validator = EmployeeValidator::validateCreate(new Request($data));
+        
+        if (!$validator['valid']) {
+            throw new \InvalidArgumentException($validator['errors']);
+        }
+        
+        $employee = self::create($data);
+        $employee->division->updateDivisionStats();
+        
+        return $employee;
+    }
+    public static function changeDivision(int $employeeId, int $newDivisionId): bool
+    {
+        $employee = self::findOrFail($employeeId);
+        $oldDivisionId = $employee->division_id;
+        
+        $employee->division_id = $newDivisionId;
+        $result = $employee->save();
+        
+        if ($result) {
+            Division::find($oldDivisionId)?->updateDivisionStats();
+            Division::find($newDivisionId)?->updateDivisionStats();
+        }
+        
+        return $result;
+    }
+    
+    public static function getByCategory(?int $categoryId = null)
+    {
+        $query = self::with(['position', 'division']);
+        
+        if ($categoryId) {
+            $query->where('staff_category_id', $categoryId);
+        }
+        
+        return $query->get();
+    }
+
+
     public function division(){
         return $this->belongsTo(Division::class, 'division_id');
     }

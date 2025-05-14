@@ -4,48 +4,41 @@ namespace Controller;
 use Model\{Division, DivisionType, Employee};
 use Src\View;
 use Src\Request;
-use Validators\DivisionValidator;
-use function HRValidator\validate;
 
 class DivisionController
 {
-    public function show(Request $request): string{
-        $id = $request->get('id');
-        $division = Division::with([
-            'type',
-            'employees' => function($query) {
-                $query->with(['position', 'staffCategory']);
-            }
-        ])->find($id);
-        if (!$division) {return new View('errors.404', [], 404);}
+    public function show(Request $request): string
+    {
+        $division = Division::getWithDetails($request->get('id'));
+        
+        if (!$division) {
+            return new View('errors.404', [], 404);
+        }
+        
         return (new View())->render('divisions.show', [
             'division' => $division,
             'employees' => $division->employees
         ]);
     }
 
-    public function createDivision(Request $request): string{
-        $division_types = DivisionType::all();
+    public function createDivision(Request $request): string
+    {
         if ($request->method === 'POST') {
-            $result = DivisionValidator::validateCreate($request);
-            if (!$result['valid']) {
-                $errorMessages = [];
-                foreach ($result['errors'] as $field => $errors) {
-                    $errorMessages[] = implode(', ', $errors);
+            try {
+                if (Division::createDivision($request->all())) {
+                    app()->route->redirect('/dashboard');
                 }
-                $message = implode('; ', $errorMessages);
-    
+            } catch (\InvalidArgumentException $e) {
                 return new View('divisions.create', [
-                    'division_types' => $division_types,
-                    'message' => $message,
+                    'division_types' => DivisionType::all(),
+                    'message' => $e->getMessage(),
                     'old' => $request->all()
                 ]);
             }
-            if (Division::create(['division_name' => $request->division_name, 'division_type_id' => $request->division_type_id])) 
-            {
-                app()->route->redirect('/dashboard');
-            }
         }
-        return new View('divisions.create', ['division_types' => $division_types]);    
+        
+        return new View('divisions.create', [
+            'division_types' => DivisionType::all()
+        ]);
     }
 }
