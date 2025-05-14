@@ -10,8 +10,8 @@
         <select id="division_type_id" name="division_type_id" <?= isset($errors['division_type_id']) ? 'is-invalid' : '' ?>" >
             <option value="">Выберите тип подразделение</option>
             <?php foreach ($division_types as $division_type): ?>
-                <option value="<?= $division_type->division_type_id ?>"
-                    <?= ($request->division_type_id ?? '') == $division_type->division_type_id ? 'selected' : '' ?>>
+                <option value="<?= $division_type->id ?>"
+                    <?= ($request->division_type_id ?? '') == $division_type->id ? 'selected' : '' ?>>
                     <?= htmlspecialchars($division_type->division_type_name) ?>
                 </option>
             <?php endforeach; ?>

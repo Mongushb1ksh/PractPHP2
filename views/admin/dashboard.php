@@ -159,10 +159,9 @@
             <thead>
                <tr>
                    <th>ID</th> 
-                   <th>Логин</th>
                    <th>Имя</th>
                    <th>Фамилия</th>
-                  
+                   <th>Логин</th>
                    <th>Роль</th>
                </tr>
             </thead>
@@ -170,10 +169,9 @@
                 <?php foreach ($users as $user): ?>
                 <tr>
                     <td><?= $user->id ?></td>
-                    <td><?= htmlspecialchars($user->lastName) ?></td>
-                    <td><?= htmlspecialchars($user->login) ?></td>
                     <td><?= htmlspecialchars($user->name) ?></td>
-                    
+                    <td><?= htmlspecialchars($user->lastName) ?></td>
+                    <td><?= htmlspecialchars($user->login) ?></td>                   
                     <td>
                         <span class="badge bg-<?= $user->role === 'admin' ? 'danger' : 'primary' ?>">
                             <?= $user->role ?>

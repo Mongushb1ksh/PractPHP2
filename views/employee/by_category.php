@@ -5,8 +5,8 @@
         <select id="category_id" name="category_id" required>
             <option value="">Выберите категорию</option>
             <?php foreach ($categories as $staff_category): ?>
-                <option value="<?= $staff_category->staff_category_id ?>"
-                    <?= ($selected_category_id ?? '') == $staff_category->staff_category_id ? 'selected' : '' ?>>
+                <option value="<?= $staff_category->id ?>"
+                    <?= ($selected_category_id ?? '') == $staff_category->id ? 'selected' : '' ?>>
                     <?= htmlspecialchars($staff_category->staff_category_name) ?>
                 </option>
             <?php endforeach; ?>
@@ -24,6 +24,7 @@
                 <th>Имя</th>
                 <th>Дата рождения</th>
                 <th>Должность</th>
+                <th>Состав</th>
                 <th>Подразделение</th>
             </tr>
         </thead>
@@ -34,6 +35,7 @@
                     <td><?= htmlspecialchars($employee->first_name) ?></td>
                     <td><?= htmlspecialchars($employee->birth_date) ?></td>
                     <td><?= htmlspecialchars($employee->position->position_name) ?></td>
+                    <td><?= htmlspecialchars($employee->staffCategory->staff_category_name) ?></td>
                     <td><?= htmlspecialchars($employee->division->division_name) ?></td>
                 </tr>
             <?php endforeach; ?>

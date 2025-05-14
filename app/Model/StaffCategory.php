@@ -9,7 +9,6 @@ use Src\Auth\IdentityInterface;
 class StaffCategory extends Model
 {
    use HasFactory;
-   protected $primaryKey = 'staff_category_id';
    public $timestamps = false;
    protected $fillable = [
     'staff_category_name'

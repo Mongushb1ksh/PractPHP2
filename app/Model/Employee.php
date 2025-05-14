@@ -10,15 +10,17 @@ use Src\Request;
 class Employee  extends Model
 {
     use HasFactory;
-    protected $primaryKey = 'employee_id';
     public $timestamps = false;
     protected $fillable = [
             'last_name', 'first_name', 'middle_name',
             'birth_date', 'registration_address',
             'division_id', 'staff_category_id', 'position_id'
     ];
+
     public static function createEmployee(array $data): self
     {
+
+
         $validator = EmployeeValidator::validateCreate(new Request($data));
         
         if (!$validator['valid']) {
@@ -30,8 +32,11 @@ class Employee  extends Model
         }
         
         $employee = self::create($data);
-        $employee->division->updateDivisionStats();
-        
+
+        $division = Division::find($employee->division_id);
+        if ($division) {
+            $division->updateDivisionStats();
+        }
         return $employee;
     }
     public static function changeDivision(int $employeeId, ?int $newDivisionId): bool
@@ -71,10 +76,10 @@ class Employee  extends Model
         return $this->belongsTo(Division::class, 'division_id');
     }
     public function staffCategory(){
-        return $this->belongsTo(StaffCategory::class, 'staff_category_id');
+        return $this->belongsTo(StaffCategory::class);
     }
     public function position() {
-        return $this->belongsTo(Position::class, 'position_id');
+        return $this->belongsTo(Position::class);
     }
     public function getFullNameAttribute(): string{
         return trim("{$this->last_name} {$this->first_name} {$this->middle_name}");

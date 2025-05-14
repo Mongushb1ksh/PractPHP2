@@ -40,8 +40,8 @@
         <select id="position_id" name="position_id" <?= isset($errors['position_id']) ? 'is-invalid' : '' ?>" >
             <option value="">Выберите должность</option>
             <?php foreach ($positions as $position): ?>
-                <option value="<?= $position->position_id ?>"
-                    <?= ($request->position_id ?? '') == $position->position_id ? 'selected' : '' ?>>
+                <option value="<?= $position->id ?>"
+                    <?= ($request->position_id ?? '') == $position->id ? 'selected' : '' ?>>
                     <?= htmlspecialchars($position->position_name) ?>
                 </option>
             <?php endforeach; ?>
@@ -52,8 +52,8 @@
         <select id="staff_category_id" name="staff_category_id" <?= isset($errors['staff_category_id']) ? 'is-invalid' : '' ?>" >
             <option value="">Выберите категорию</option>
             <?php foreach ($categories as $category): ?>
-                <option value="<?= $category->staff_category_id ?>"
-                    <?= ($request->staff_category_id ?? '') == $category->staff_category_id ? 'selected' : '' ?>>
+                <option value="<?= $category->id ?>"
+                    <?= ($request->staff_category_id ?? '') == $category->id ? 'selected' : '' ?>>
                     <?= htmlspecialchars($category->staff_category_name) ?>
                 </option>
             <?php endforeach; ?>
