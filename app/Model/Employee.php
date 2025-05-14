@@ -22,7 +22,11 @@ class Employee  extends Model
         $validator = EmployeeValidator::validateCreate(new Request($data));
         
         if (!$validator['valid']) {
-            throw new \InvalidArgumentException($validator['errors']);
+            $errorMessages = [];
+            foreach ($validator['errors'] as $field => $errors) {
+                $errorMessages[] = implode(', ', $errors);
+            }
+            throw new \InvalidArgumentException(implode('; ', $errorMessages));
         }
         
         $employee = self::create($data);
@@ -30,8 +34,12 @@ class Employee  extends Model
         
         return $employee;
     }
-    public static function changeDivision(int $employeeId, int $newDivisionId): bool
+    public static function changeDivision(int $employeeId, ?int $newDivisionId): bool
     {
+        if ($newDivisionId === null) {
+            throw new \InvalidArgumentException('Не выбрано новое подразделение');
+        }
+    
         $employee = self::findOrFail($employeeId);
         $oldDivisionId = $employee->division_id;
         
@@ -50,9 +58,10 @@ class Employee  extends Model
     {
         $query = self::with(['position', 'division']);
         
-        if ($categoryId) {
+        if ($categoryId !== null) {
             $query->where('staff_category_id', $categoryId);
         }
+
         
         return $query->get();
     }

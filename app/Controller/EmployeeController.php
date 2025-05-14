@@ -26,33 +26,41 @@ class EmployeeController
 
     public function employeesByCategory(Request $request): string
     {
+
+        $categoryId = isset($request->all()['category_id']) ? (int)$request->all()['category_id'] : null;
+    
         return new View('employee.by_category', [
             'categories' => StaffCategory::all(),
-            'employees' => Employee::getByCategory($request->get('category_id')),
-            'selected_category_id' => $request->get('category_id')
+            'employees' => Employee::getByCategory($categoryId),
+            'selected_category_id' => $categoryId
         ]);
     }
 
     public function changeDivision(Request $request): string
     {
+        $employeeId = (int)$request->get('id');
+        $newDivisionId = $request->get('division_id') !== '' 
+            ? (int)$request->get('division_id') 
+            : null;
+    
         if ($request->method === 'POST') {
             try {
-                Employee::changeDivision(
-                    $request->get('id'),
-                    $request->division_id
-                );
+                Employee::changeDivision($employeeId, $newDivisionId);
                 app()->route->redirect('/dashboard');
             } catch (\InvalidArgumentException $e) {
-                return $this->returnWithErrors('employee.change_division', 
-                    ['errors' => $e->getMessage()],
-                    $this->getChangeDivisionData($request->get('id'))
-                );
+                return new View('employee.change_division', [
+                    'employee' => Employee::with(['division'])->find($employeeId),
+                    'divisions' => Division::all(),
+                    'message' => $e->getMessage(),
+                    'old' => $request->all()
+                ]);
             }
         }
         
-        return new View('employee.change_division', 
-            $this->getChangeDivisionData($request->get('id'))
-        );
+        return new View('employee.change_division', [
+            'employee' => Employee::with(['division'])->find($employeeId),
+            'divisions' => Division::all()
+        ]);
     }
 
     private function getFormData(): array

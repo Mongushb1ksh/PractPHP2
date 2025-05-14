@@ -23,9 +23,12 @@ class Division extends Model
    public static function createDivision(array $data): bool
     {
         $validator = DivisionValidator::validateCreate(new Request($data));
-        
         if (!$validator['valid']) {
-            throw new \InvalidArgumentException($validator['errors']);
+            $errorMessages = [];
+            foreach ($validator['errors'] as $field => $errors) {
+                $errorMessages[] = implode(', ', $errors);
+            }
+            throw new \InvalidArgumentException(implode('; ', $errorMessages));
         }
         
         return (bool) self::create($data);
